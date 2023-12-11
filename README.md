@@ -29,6 +29,7 @@ The `excel/` directory contains an excel sheet with the following columns:
 - Transcription: The actual transcription of the audio file.
 - Label: The sentiment label (positive or negative) of the transcription.
 
-N.B.: All Whisper models (finetuned for transcription or classification) should be saved in the code/Whisper folder. `/'
+N.B.: All Whisper models (finetuned for transcription or classification) should be saved in the code/Whisper folder. 
+#
 N.B.: All Wav2Vec2 models (finetuned for transcription or classification) should be saved in the code/Wav2Vec2 folder.
 
