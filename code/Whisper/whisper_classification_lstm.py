@@ -17,10 +17,10 @@ from datasets import load_dataset
 from sklearn.metrics import f1_score, classification_report, accuracy_score
 import os
 OR_PATH = os.getcwd()
-print(OR_PATH)
+# print(OR_PATH)
 os.chdir("..")
 os.chdir("..")# Change to the parent directory
-print(os.getcwd())
+# print(os.getcwd())
 audio_df = pd.read_excel("./excel/audio_wav.xlsx")
 
 def get_all_full_paths(parent_directory):

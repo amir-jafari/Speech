@@ -89,12 +89,24 @@ test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
 SAVE_PATH = model = OR_PATH+"/best_model_cnn.pt"
 
+import torch
+import torch.nn as nn
+
 class SpeechClassifier(nn.Module):
     def __init__(self, num_labels, encoder):
         super(SpeechClassifier, self).__init__()
         self.encoder = encoder
+
+        # Convolutional layer
+        self.conv1d = nn.Conv1d(in_channels=self.encoder.config.hidden_size,
+                                out_channels=256,
+                                kernel_size=5,
+                                stride=1,
+                                padding=2)
+
+        # Linear layers
         self.classifier = nn.Sequential(
-            nn.Linear(self.encoder.config.hidden_size, 4096),
+            nn.Linear(256, 4096),  # Adjust the input size to match the output of the conv layer
             nn.ReLU(),
             nn.Linear(4096, 2048),
             nn.ReLU(),
@@ -106,10 +118,18 @@ class SpeechClassifier(nn.Module):
         )
 
     def forward(self, input_features, decoder_input_ids):
+        # Pass input through the encoder
         outputs = self.encoder(input_features, decoder_input_ids=decoder_input_ids)
         pooled_output = outputs['last_hidden_state'][:, 0, :]
-        logits = self.classifier(pooled_output)
+
+        # Reshape for convolutional layer
+        conv_input = pooled_output.unsqueeze(2)  # Add an extra dimension
+        conv_output = self.conv1d(conv_input).squeeze(2)  # Remove the extra dimension after convolution
+
+        # Pass through the classifier
+        logits = self.classifier(conv_output)
         return logits
+
 
 num_labels = 1
 

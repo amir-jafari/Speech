@@ -20,10 +20,10 @@ from transformers import Wav2Vec2CTCTokenizer
 from transformers import Wav2Vec2Processor
 
 # processor = Wav2Vec2Processor(feature_extractor=feature_extractor, tokenizer=tokenizer)
-processor = Wav2Vec2Processor.from_pretrained("/home/ubuntu/bengali_asr/code/Wav2vec2-XLS/wav2vec2-large-xlsr-bengali")
+processor = Wav2Vec2Processor.from_pretrained("./wav2vec2-large-xlsr-bengali")
 import torch
 from transformers import Wav2Vec2ForCTC
-model = Wav2Vec2ForCTC.from_pretrained("/home/ubuntu/bengali_asr/code/Wav2vec2-XLS/wav2vec2-large-xlsr-bengali/checkpoint-750")
+model = Wav2Vec2ForCTC.from_pretrained("./wav2vec2-large-xlsr-bengali")# /checkpoint-4250
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 

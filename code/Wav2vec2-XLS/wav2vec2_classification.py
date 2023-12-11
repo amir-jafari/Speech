@@ -21,14 +21,18 @@ import torch.utils.data
 from torch.utils.data import Dataset, DataLoader
 from datasets import load_dataset
 from sklearn.metrics import f1_score, classification_report, accuracy_score
-
-audio_df = pd.read_excel("/home/ubuntu/bengali_asr/audio_wav/audio_wav.xlsx")
+OR_PATH = os.getcwd()
+print(OR_PATH)
+os.chdir("..")
+os.chdir("..")# Change to the parent directory
+print(os.getcwd())
+audio_df = pd.read_excel("./excel/audio_wav.xlsx")
 def get_all_full_paths(parent_directory):
     audio_file_paths = [os.path.join(parent_directory, fname) for fname in os.listdir(parent_directory) if fname.endswith('.wav')]
     file_path_dict = {os.path.basename(path): path for path in audio_file_paths}
     return file_path_dict
 
-audio_files_directory = '/home/ubuntu/bengali_asr/audio_wav'
+audio_files_directory = './data'
 file_path_dict = get_all_full_paths(audio_files_directory)
 
 audio_df['full_path'] = audio_df['path'].apply(lambda x: file_path_dict.get(x))
@@ -69,7 +73,7 @@ num_labels = len(label_list)
 # # .... till here .......
 from transformers import AutoConfig, Wav2Vec2Processor, AutoProcessor
 
-model_name_or_path = "/home/ubuntu/bengali_asr/code/Wav2vec2-XLS/wav2vec2-large-xlsr-bengali"
+model_name_or_path = OR_PATH+"/wav2vec2-large-xlsr-bengali"
 pooling_mode = "mean"
 
 # config
@@ -327,11 +331,11 @@ model.freeze_feature_extractor()
 # from google.colab import drive
 
 # drive.mount('/gdrive')
-
+outputdir = OR_PATH + "/wav2vec2-xlsr-bengali-classification"
 from transformers import TrainingArguments
 
 training_args = TrainingArguments(
-    output_dir="wav2vec2-xlsr-bengali-classification",
+    output_dir=outputdir,
     # output_dir="/content/gdrive/MyDrive/wav2vec2-xlsr-greek-speech-emotion-recognition"
     per_device_train_batch_size=1,
     per_device_eval_batch_size=1,
@@ -420,10 +424,10 @@ from sklearn.metrics import classification_report
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Device: {device}")
 
-model_name_or_path = "/home/ubuntu/bengali_asr/code/Wav2vec2-XLS/wav2vec2-xlsr-bengali-classification"
-config = AutoConfig.from_pretrained("/home/ubuntu/bengali_asr/code/Wav2vec2-XLS/wav2vec2-xlsr-bengali-classification/checkpoint-30")
-processor = Wav2Vec2Processor.from_pretrained("/home/ubuntu/bengali_asr/code/Wav2vec2-XLS/wav2vec2-xlsr-bengali-classification")
-model = Wav2Vec2ForSpeechClassification.from_pretrained("/home/ubuntu/bengali_asr/code/Wav2vec2-XLS/wav2vec2-xlsr-bengali-classification/checkpoint-30").to(device)
+model_name_or_path = outputdir
+config = AutoConfig.from_pretrained(model_name_or_path )
+processor = Wav2Vec2Processor.from_pretrained(model_name_or_path )
+model = Wav2Vec2ForSpeechClassification.from_pretrained(model_name_or_path ).to(device)
 
 # def speech_file_to_array_fn(batch):
 #     # Load the audio file
@@ -474,3 +478,4 @@ y_pred = result["predicted"]
 # print(y_pred[:5])
 
 print(classification_report(y_true, y_pred, target_names=label_names))
+print("ACCURACY SCORE: ",accuracy_score(y_true, y_pred))

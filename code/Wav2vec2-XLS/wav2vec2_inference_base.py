@@ -3,14 +3,14 @@ from datasets import load_dataset, load_metric, Audio
 
 # common_voice_train =load_dataset("mozilla-foundation/common_voice_11_0", "bn", split="train+validation")
 common_voice_test = load_dataset("mozilla-foundation/common_voice_11_0", "bn", split="test")
-# first_100_rows = common_voice_test.select(indices=range(50))
-# # Print the first 100 rows
-# print(first_100_rows)
-dataset = common_voice_test.cast_column("audio", Audio(sampling_rate=16000))
+first_100_rows = common_voice_test.select(indices=range(50))
+# Print the first 100 rows
+print(first_100_rows)
+dataset = first_100_rows.cast_column("audio", Audio(sampling_rate=16000))
 
 from transformers import Wav2Vec2CTCTokenizer, AutoTokenizer
 
-tokenizer = Wav2Vec2CTCTokenizer("/home/ubuntu/bengali_asr/code/Wav2vec2-XLS/wav2vec2-large-xlsr-bengali/vocab.json", unk_token="[UNK]", pad_token="[PAD]", word_delimiter_token="|")
+tokenizer = Wav2Vec2CTCTokenizer("./vocab.json", unk_token="[UNK]", pad_token="[PAD]", word_delimiter_token="|")
 # Import generic wrappers
 # from transformers import AutoModel, AutoTokenizer
 #
@@ -63,6 +63,6 @@ result = test_dataset.map(predict, batched=True, batch_size=8)
 wer_scores = [wer(ref, hyp) for ref, hyp in zip(result["sentence"], result["predicted"])]
 average_wer = sum(wer_scores) / len(wer_scores)
 
-print(f"Average WER: {average_wer}")
+print(f"Average WER: {average_wer:.2f}")
 
 
